@@ -1,6 +1,6 @@
 # BedrockOpenWebUI
 
-This is where I keep my docker compose yaml for running an AWS Bedrock backed OpenWebUI. What else do you want? Oh an explaination?
+This is where I keep my docker compose yaml for running an AWS Bedrock backed OpenWebUI. What else do you want? Oh an explanation?
 
 ## User Guide
 ### Environment variables
