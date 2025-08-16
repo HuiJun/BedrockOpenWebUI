@@ -1,0 +1,38 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    volumes:
+      - ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/open-webui:/app/backend/data
+    environment:
+      - OPENAI_API_BASE_URL=http://bedrock-access-gateway/api/v1
+      - OPENAI_API_KEY=bedrock
+      - ENABLE_OLLAMA_API=False
+      - USE_CUDA_DOCKER=True
+    networks:
+      - proxy
+
+  bedrock-access-gateway:
+    build:
+      context: https://github.com/aws-samples/bedrock-access-gateway.git#main:src
+      dockerfile: Dockerfile_ecs
+    container_name: bedrock-access-gateway
+    restart: always
+    expose:
+      - 80
+    environment:
+      - AWS_REGION=${AWS_REGION:-us-west-2}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: open-webui-proxy
+    driver: bridge
