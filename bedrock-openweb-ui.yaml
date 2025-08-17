@@ -1,19 +1,28 @@
 services:
+  caddy:
+    container_name: caddy
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    networks:
+      - open-webui-bridge
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./assets/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+
   open-webui:
+    container_name: open-webui
     image: ghcr.io/open-webui/open-webui:main
     pull_policy: always
-    container_name: open-webui
     restart: unless-stopped
     volumes:
       - open-webui:/app/backend/data
     networks:
       - open-webui-bridge
-    ports:
-      - ${OPENWEBUI_PORT:-8080}:${OPENWEBUI_PORT:-8080}
-    expose:
-      - ${OPENWEBUI_PORT:-8080}
     environment:
       - PORT=${OPENWEBUI_PORT:-8080}
+      - HOST=0.0.0.0
       - OPENAI_API_BASE_URL=http://bedrock-access-gateway:${BEDROCK_ACCESS_GATEWAY_PORT:-8000}/api/v1
       - OPENAI_API_KEY=bedrock
       - ENABLE_OLLAMA_API=True
@@ -31,15 +40,13 @@ services:
       - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
 
   bedrock-access-gateway:
+    container_name: bedrock-access-gateway
     build:
       context: https://github.com/aws-samples/bedrock-access-gateway.git#main:src
       dockerfile: Dockerfile_ecs
-    container_name: bedrock-access-gateway
     restart: unless-stopped
     networks:
       - open-webui-bridge
-    expose:
-      - ${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
     environment:
       - PORT=${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
       - AWS_REGION=${AWS_REGION:-us-west-2}
@@ -47,9 +54,9 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
   ollama-server:
+    container_name: ollama-server
     image: ollama/ollama:latest
     pull_policy: always
-    container_name: ollama-server
     entrypoint: [ "/bin/bash", "/entrypoint.sh" ]
     tty: true
     restart: unless-stopped
@@ -58,8 +65,6 @@ services:
       - ./assets/ollama/entrypoint.sh:/entrypoint.sh
     networks:
       - open-webui-bridge
-    expose:
-      - ${OLLAMA_WEBAPI_PORT:-11434}
     environment:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
@@ -75,8 +80,6 @@ services:
       - valkey:/data
     networks:
       - open-webui-bridge
-    expose:
-      - 6379
 
   searxng-server:
     container_name: searxng-server
@@ -84,11 +87,9 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
-    expose:
-      - ${SEARXNG_PORT:-8888}
     volumes:
       - searxng:/var/cache/searxng
-      - ./assets/searxng/:/etc/searxng/:rw
+      - ./assets/searxng:/etc/searxng:rw
     environment:
       - SEARXNG_BASE_URL=https://searxng-server:${SEARXNG_PORT:-8888}/
       - SEARXNG_SECRET=${SEARXNG_SECRET:-somesearxngsecret}

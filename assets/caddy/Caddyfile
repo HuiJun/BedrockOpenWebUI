@@ -1,0 +1,3 @@
+* {
+  reverse_proxy http://open-webui:8080
+}
