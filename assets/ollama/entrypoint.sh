@@ -8,8 +8,8 @@ pid=$!
 # Pause for Ollama to start.
 sleep 5
 
-echo "Retrieve default model: ${DEFAULT_MODEL}..."
-/bin/ollama pull ${DEFAULT_MODEL}
+echo "Retrieve local model: ${LOCAL_MODEL}..."
+/bin/ollama pull ${LOCAL_MODEL}
 echo "Done!"
 
 # Wait for Ollama process to finish.

@@ -10,6 +10,11 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 ```
 
+Important:
+```bash
+export LOCAL_MODEL=hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M
+```
+
 External:
 ```bash
 export OPENWEBUI_PORT=8080

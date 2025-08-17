@@ -18,7 +18,7 @@ services:
       - OPENAI_API_KEY=bedrock
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
-      - DEFAULT_MODELS=${DEFAULT_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
+      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
       - REDIS_URL=redis://valkey-server:6379/0
       - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
       - USE_CUDA_DOCKER=True
@@ -64,7 +64,7 @@ services:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - DEFAULT_MODEL=${DEFAULT_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
+      - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
 
   valkey-server:
     container_name: valkey-server
