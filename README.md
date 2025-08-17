@@ -10,12 +10,11 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 ```
 
-Optional:
+External:
 ```bash
 export OPENWEBUI_PORT=8080
-export BEDROCK_PROTOCOL=http
-export BEDROCK_PORT=80
-export DOCKER_VOLUME_STORAGE=/mnt/docker-volumes
+export BEDROCK_ACCESS_GATEWAY_PORT=8000
+export OLLAMA_WEBAPI_PORT=11434
 export AWS_REGION=us-west-2
 ```
 
