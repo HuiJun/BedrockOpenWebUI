@@ -4,6 +4,9 @@ This is where I keep my docker compose yaml for running an AWS Bedrock backed Op
 
 ## User Guide
 ### Environment variables
+*NOTE: Values exported are the default values*
+
+
 Required:
 ```bash
 export AWS_ACCESS_KEY_ID=
