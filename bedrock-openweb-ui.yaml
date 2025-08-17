@@ -14,17 +14,21 @@ services:
       - ${OPENWEBUI_PORT:-8080}
     environment:
       - PORT=${OPENWEBUI_PORT:-8080}
-      - OPENAI_API_BASE_URL=http://bedrock-access-gateway/api/v1
+      - OPENAI_API_BASE_URL=http://bedrock-access-gateway:${BEDROCK_ACCESS_GATEWAY_PORT:-8000}/api/v1
       - OPENAI_API_KEY=bedrock
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
-      - DEFAULT_MODELS=hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M
+      - DEFAULT_MODELS=${DEFAULT_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
+      - REDIS_URL=redis://valkey-server:6379/0
+      - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
       - USE_CUDA_DOCKER=True
       - MODELS_CACHE_TTL=1210000
       - ENABLE_WEB_SEARCH=True
       - WEB_SEARCH_ENGINE=searxng
-      - WEB_SEARCH_RESULT_COUNT=10
-      - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
+      - WEB_SEARCH_TRUST_ENV=True
+      - WEB_SEARCH_RESULT_COUNT=3
+      - WEB_SEARCH_CONCURRENT_REQUESTS=10
+      - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
 
   bedrock-access-gateway:
     build:
@@ -35,8 +39,9 @@ services:
     networks:
       - proxy
     expose:
-      - ${BEDROCK_ACCESS_GATEWAY_PORT:-8000}:80
+      - ${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
     environment:
+      - PORT=${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
       - AWS_REGION=${AWS_REGION:-us-west-2}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -54,11 +59,12 @@ services:
     networks:
       - proxy
     expose:
-      - ${OLLAMA_WEBAPI_PORT:-11434}:${OLLAMA_WEBAPI_PORT:-11434}
+      - ${OLLAMA_WEBAPI_PORT:-11434}
     environment:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
 
   valkey-server:
     container_name: valkey-server
@@ -74,7 +80,7 @@ services:
 
   searxng-server:
     container_name: searxng-server
-    image: ghcr.io/searxng/searxng:2025.8.12-6b1516d
+    image: ghcr.io/searxng/searxng:latest
     restart: unless-stopped
     networks:
       - proxy

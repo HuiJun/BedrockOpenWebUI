@@ -9,4 +9,4 @@ search:
   formats:
     - json
 valkey:
-  url: valkey://valkey:6379/0
+  url: valkey://valkey-server:6379/0
