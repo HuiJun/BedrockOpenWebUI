@@ -16,6 +16,8 @@ export OPENWEBUI_PORT=8080
 export BEDROCK_ACCESS_GATEWAY_PORT=8000
 export OLLAMA_WEBAPI_PORT=11434
 export AWS_REGION=us-west-2
+export SEARXNG_SECRET=somesearxngsecret
+export SEARXNG_PORT=8888
 ```
 
 ### Running the stack

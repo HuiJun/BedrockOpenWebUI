@@ -24,9 +24,6 @@ services:
       - ENABLE_WEB_SEARCH=True
       - WEB_SEARCH_ENGINE=searxng
       - WEB_SEARCH_RESULT_COUNT=10
-      - SEARXNG_SECRET=${SEARXNG_SECRET:-somesearxngsecret}
-      - SEARXNG_LIMITER=False
-      - SEARXNG_PUBLIC_INSTANCE=False
       - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
 
   bedrock-access-gateway:
