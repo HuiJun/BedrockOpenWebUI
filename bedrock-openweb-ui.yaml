@@ -7,7 +7,7 @@ services:
     volumes:
       - open-webui:/app/backend/data
     networks:
-      - proxy
+      - open-webui-bridge
     ports:
       - ${OPENWEBUI_PORT:-8080}:${OPENWEBUI_PORT:-8080}
     expose:
@@ -37,7 +37,7 @@ services:
     container_name: bedrock-access-gateway
     restart: unless-stopped
     networks:
-      - proxy
+      - open-webui-bridge
     expose:
       - ${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
     environment:
@@ -57,7 +57,7 @@ services:
       - ollama:/root/.ollama
       - ./assets/ollama/entrypoint.sh:/entrypoint.sh
     networks:
-      - proxy
+      - open-webui-bridge
     expose:
       - ${OLLAMA_WEBAPI_PORT:-11434}
     environment:
@@ -74,7 +74,7 @@ services:
     volumes:
       - valkey:/data
     networks:
-      - proxy
+      - open-webui-bridge
     expose:
       - 6379
 
@@ -83,22 +83,22 @@ services:
     image: ghcr.io/searxng/searxng:latest
     restart: unless-stopped
     networks:
-      - proxy
+      - open-webui-bridge
     expose:
       - ${SEARXNG_PORT:-8888}
     volumes:
       - searxng:/var/cache/searxng
       - ./assets/searxng/:/etc/searxng/:rw
     environment:
-      - SEARXNG_BASE_URL=https://127.0.0.1:${SEARXNG_PORT:-8888}/
+      - SEARXNG_BASE_URL=https://searxng-server:${SEARXNG_PORT:-8888}/
       - SEARXNG_SECRET=${SEARXNG_SECRET:-somesearxngsecret}
       - SEARXNG_LIMITER=False
       - SEARXNG_PUBLIC_INSTANCE=False
       - GRANIAN_PORT=${SEARXNG_PORT:-8888}
 
 networks:
-  proxy:
-    name: open-webui-proxy
+  open-webui-bridge:
+    name: open-webui-bridge
     driver: bridge
 
 volumes:
