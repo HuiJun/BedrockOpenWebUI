@@ -1,6 +1,6 @@
 services:
-  caddy:
-    container_name: caddy
+  reverse-proxy:
+    container_name: reverse-proxy
     image: docker.io/library/caddy:2-alpine
     restart: unless-stopped
     volumes:
