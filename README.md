@@ -2,6 +2,8 @@
 
 This is where I keep my docker compose yaml for running an AWS Bedrock backed OpenWebUI. What else do you want? Oh an explanation?
 
+This is a Open WebUI deployment that has a Bedrock Access Gateway, local Ollama server, SearxNG server, and a shared Valkey server. The only environment variables needed are the AWS credentials for the Bedrock Access Gateway.
+
 ## User Guide
 ### Environment variables
 *NOTE: Values exported are the default values*
