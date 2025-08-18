@@ -20,7 +20,7 @@ Important:
 export LOCAL_MODEL=hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0
 ```
 
-External:
+Things you'll probably never change:
 ```bash
 export OPENWEBUI_PORT=8080
 export BEDROCK_ACCESS_GATEWAY_PORT=8000
