@@ -27,9 +27,11 @@ services:
       - OPENAI_API_KEY=bedrock
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
-      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
+      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M}
       - REDIS_URL=redis://valkey-server:6379/0
       - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
+      - CONTENT_EXTRACTION_ENGINE=tika
+      - TIKA_SERVER_URL=http://tika-server:9998
       - USE_CUDA_DOCKER=True
       - MODELS_CACHE_TTL=1210000
       - ENABLE_WEB_SEARCH=True
@@ -69,7 +71,7 @@ services:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/unsloth/gemma-3-4b-it-GGUF:Q4_K_M}
+      - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M}
 
   valkey-server:
     container_name: valkey-server
@@ -96,6 +98,13 @@ services:
       - SEARXNG_LIMITER=False
       - SEARXNG_PUBLIC_INSTANCE=False
       - GRANIAN_PORT=${SEARXNG_PORT:-8888}
+
+  tika-server:
+    image: apache/tika:latest-full
+    container_name: tika-server
+    restart: unless-stopped
+    networks:
+      - open-webui-bridge
 
 networks:
   open-webui-bridge:
