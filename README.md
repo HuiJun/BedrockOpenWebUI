@@ -17,7 +17,7 @@ export AWS_SECRET_ACCESS_KEY=
 
 Important:
 ```bash
-export LOCAL_MODEL=hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M
+export LOCAL_MODEL=hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0
 ```
 
 External:

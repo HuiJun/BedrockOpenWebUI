@@ -27,7 +27,7 @@ services:
       - OPENAI_API_KEY=bedrock
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
-      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M}
+      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
       - REDIS_URL=redis://valkey-server:6379/0
       - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
       - CONTENT_EXTRACTION_ENGINE=tika
@@ -71,7 +71,7 @@ services:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/unsloth/Qwen3-14B-GGUF:Q4_K_M}
+      - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
 
   valkey-server:
     container_name: valkey-server
