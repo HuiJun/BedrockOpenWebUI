@@ -25,8 +25,8 @@ services:
     environment:
       - PORT=${OPENWEBUI_PORT:-8080}
       - HOST=0.0.0.0
-      - OPENAI_API_BASE_URL=http://bedrock-access-gateway:${BEDROCK_ACCESS_GATEWAY_PORT:-8000}/api/v1
-      - OPENAI_API_KEY=bedrock
+      - OPENAI_API_BASE_URL=http://litellm-server:${LITELLM_PORT:-4000}
+      - OPENAI_API_KEY=${LITELLM_MASTER_KEY:-sk-1234}
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
       - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
@@ -43,19 +43,27 @@ services:
       - WEB_SEARCH_CONCURRENT_REQUESTS=10
       - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
 
-  bedrock-access-gateway:
-    container_name: bedrock-access-gateway
-    build:
-      context: https://github.com/aws-samples/bedrock-access-gateway.git#main:src
-      dockerfile: Dockerfile_ecs
+  litellm-server:
+    container_name: litellm-server
+    image: ghcr.io/berriai/litellm:main-stable
+    volumes:
+      - ./assets/litellm/config.yaml:/app/config.yaml
     restart: unless-stopped
+    command: ["--config", "/app/config.yaml"]
     networks:
       - open-webui-bridge
     environment:
-      - PORT=${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
-      - AWS_REGION=${AWS_REGION:-us-west-2}
+      - PORT=${LITELLM_PORT:-4000}
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-west-2}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - APIM_SUBSCRIPTION_KEY=${APIM_SUBSCRIPTION_KEY}
+      - AZURE_API_BASE=${AZURE_API_BASE}
+      - AZURE_API_VERSION=${AZURE_API_VERSION}
 
   ollama-server:
     container_name: ollama-server
