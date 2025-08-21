@@ -3,7 +3,7 @@
 # Default target
 .PHONY: lite
 lite:
-	export PROFILE=bedrock; docker compose -f bedrock-openweb-ui.yaml --profile lite up -d $(c)
+	export PROFILE=lite; docker compose -f bedrock-openweb-ui.yaml --profile lite up -d $(c)
 
 .PHONY: full
 full:
