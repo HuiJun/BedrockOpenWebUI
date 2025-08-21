@@ -30,6 +30,9 @@ services:
       - ENABLE_OLLAMA_API=True
       - OLLAMA_BASE_URL=http://ollama-server:11434
       - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@pgvector-server:5432/${POSTGRES_DB:-openwebui}
+      - VECTOR_DB=pgvector
+      - PGVECTOR_DB_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@pgvector-server:5432/${POSTGRES_DB:-openwebui}
       - REDIS_URL=redis://valkey-server:6379/0
       - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
       - CONTENT_EXTRACTION_ENGINE=tika
@@ -85,6 +88,20 @@ services:
     networks:
       - open-webui-bridge
 
+  pgvector-server:
+    container_name: pgvector-server
+    image: pgvector/pgvector:0.8.0-pg17
+    restart: unless-stopped
+    volumes:
+      - pgvector:/var/lib/postgresql/data
+      - ./assets/pgvector/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - open-webui-bridge
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASS:-secret}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-openwebui}
+
   searxng-server:
     container_name: searxng-server
     image: ghcr.io/searxng/searxng:latest
@@ -117,4 +134,5 @@ volumes:
   ollama: {}
   open-webui: {}
   valkey: {}
+  pgvector: {}
   searxng: {}
