@@ -18,13 +18,14 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     pull_policy: always
     restart: unless-stopped
+    command: ["bash", "pre-start.sh"]
     volumes:
       - open-webui:/app/backend/data
+      - ./assets/openwebui/pre-start.sh:/app/backend/pre-start.sh
     networks:
       - open-webui-bridge
-    env_file:
-      - ./assets/openwebui/env.${PROFILE}
     environment:
+      - PROFILE=${PROFILE}
       - PORT=${OPENWEBUI_PORT:-8080}
       - HOST=0.0.0.0
       - USE_CUDA_DOCKER=True
@@ -94,6 +95,17 @@ services:
     image: apache/tika:latest-full
     container_name: tika-server
     restart: unless-stopped
+    networks:
+      - open-webui-bridge
+    profiles:
+      - full
+      - bedrock
+      - ollama
+
+  kokoro-server:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu
+    container_name: kokoro-server
+    restart: always
     networks:
       - open-webui-bridge
     profiles:
