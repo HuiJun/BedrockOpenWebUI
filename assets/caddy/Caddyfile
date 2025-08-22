@@ -1,3 +1,5 @@
 * {
-  reverse_proxy {$TARGET}
+    handle /* {
+        reverse_proxy {$TARGET}
+    }
 }

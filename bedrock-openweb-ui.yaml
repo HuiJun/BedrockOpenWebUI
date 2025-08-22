@@ -18,29 +18,18 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     pull_policy: always
     restart: unless-stopped
+    command: ["bash", "pre-start.sh"]
     volumes:
       - open-webui:/app/backend/data
+      - ./assets/openwebui/pre-start.sh:/app/backend/pre-start.sh
     networks:
       - open-webui-bridge
     environment:
+      - PROFILE=${PROFILE}
       - PORT=${OPENWEBUI_PORT:-8080}
       - HOST=0.0.0.0
-      - OPENAI_API_BASE_URL=http://litellm-server:${LITELLM_PORT:-4000}
-      - OPENAI_API_KEY=${LITELLM_MASTER_KEY:-sk-1234}
-      - ENABLE_OLLAMA_API=True
-      - OLLAMA_BASE_URL=http://ollama-server:11434
-      - DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
-      - REDIS_URL=redis://valkey-server:6379/0
-      - SEARXNG_QUERY_URL=http://searxng-server:${SEARXNG_PORT:-8888}/search?q=<query>
-      - CONTENT_EXTRACTION_ENGINE=tika
-      - TIKA_SERVER_URL=http://tika-server:9998
       - USE_CUDA_DOCKER=True
       - MODELS_CACHE_TTL=1210000
-      - ENABLE_WEB_SEARCH=True
-      - WEB_SEARCH_ENGINE=searxng
-      - WEB_SEARCH_TRUST_ENV=True
-      - WEB_SEARCH_RESULT_COUNT=3
-      - WEB_SEARCH_CONCURRENT_REQUESTS=10
       - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
 
   litellm-server:
@@ -82,16 +71,9 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - LOCAL_MODEL=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
-
-  valkey-server:
-    container_name: valkey-server
-    image: valkey/valkey:8-alpine
-    command: valkey-server --save 30 1 --loglevel warning
-    restart: unless-stopped
-    volumes:
-      - valkey:/data
-    networks:
-      - open-webui-bridge
+    profiles:
+      - full
+      - ollama
 
   searxng-server:
     container_name: searxng-server
@@ -108,6 +90,10 @@ services:
       - SEARXNG_LIMITER=False
       - SEARXNG_PUBLIC_INSTANCE=False
       - GRANIAN_PORT=${SEARXNG_PORT:-8888}
+    profiles:
+      - full
+      - bedrock
+      - ollama
 
   tika-server:
     image: apache/tika:latest-full
@@ -115,6 +101,53 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
+    profiles:
+      - full
+      - bedrock
+      - ollama
+
+  kokoro-server:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu
+    container_name: kokoro-server
+    restart: always
+    networks:
+      - open-webui-bridge
+    profiles:
+      - full
+      - bedrock
+      - ollama
+
+  pgvector-server:
+    container_name: pgvector-server
+    image: pgvector/pgvector:0.8.0-pg17
+    restart: unless-stopped
+    volumes:
+      - pgvector:/var/lib/postgresql/data
+      - ./assets/pgvector/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - open-webui-bridge
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASS:-secret}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-openwebui}
+    profiles:
+      - full
+      - bedrock
+      - ollama
+
+  valkey-server:
+    container_name: valkey-server
+    image: valkey/valkey:8-alpine
+    command: valkey-server --save 30 1 --loglevel warning
+    restart: unless-stopped
+    volumes:
+      - valkey:/data
+    networks:
+      - open-webui-bridge
+    profiles:
+      - full
+      - bedrock
+      - ollama
 
 networks:
   open-webui-bridge:
@@ -122,7 +155,18 @@ networks:
     driver: bridge
 
 volumes:
-  ollama: {}
-  open-webui: {}
-  valkey: {}
-  searxng: {}
+  ollama:
+    labels:
+      - "com.github.bedrockopenwebui.stack"
+  open-webui:
+    labels:
+      - "com.github.bedrockopenwebui.stack"
+  valkey:
+    labels:
+      - "com.github.bedrockopenwebui.stack"
+  pgvector:
+    labels:
+      - "com.github.bedrockopenwebui.stack"
+  searxng:
+    labels:
+      - "com.github.bedrockopenwebui.stack"
