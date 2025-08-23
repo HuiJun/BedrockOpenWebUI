@@ -7,7 +7,7 @@ lite:
 
 .PHONY: full
 full:
-	export PROFILE=full; docker compose -f bedrock-openweb-ui.yaml --profile full up -d $(c)
+	export PROFILE=full; export LITELLM_MODELS=ollama; docker compose -f bedrock-openweb-ui.yaml --profile full up -d $(c)
 
 .PHONY: bedrock
 bedrock:
@@ -15,7 +15,7 @@ bedrock:
 
 .PHONY: ollama
 ollama:
-	export PROFILE=ollama; docker compose -f bedrock-openweb-ui.yaml --profile ollama up -d $(c)
+	export PROFILE=ollama; export LITELLM_MODELS=ollama; docker compose -f bedrock-openweb-ui.yaml --profile ollama up -d $(c)
 
 .PHONY: down
 down:

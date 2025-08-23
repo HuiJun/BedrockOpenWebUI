@@ -30,20 +30,31 @@ services:
       - HOST=0.0.0.0
       - USE_CUDA_DOCKER=True
       - MODELS_CACHE_TTL=1210000
+      - ENABLE_FORWARD_USER_INFO_HEADERS=True
       - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
+      - LOCAL_MODEL=${LOCAL_MODEL:-gpt-oss-120b}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASS=${POSTGRES_PASS:-secret}
+      - POSTGRES_SERVER=${POSTGRES_SERVER:-pgvector-server}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
 
   litellm-server:
     container_name: litellm-server
     image: ghcr.io/berriai/litellm:main-stable
     volumes:
-      - ./assets/litellm/config.yaml:/app/config.yaml
+      - ./assets/litellm/config-${LITELLM_MODELS:-bedrock}.yaml:/app/config.yaml
     restart: unless-stopped
     command: ["--config", "/app/config.yaml"]
     networks:
       - open-webui-bridge
+    ports:
+      - "4000:4000"
     environment:
-      - PORT=${LITELLM_PORT:-4000}
+      - PORT=4000
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${LITELLM_POSTGRES_DB:-litellm}
+      - REDIS_HOST=valkey-server
+      - REDIS_PORT=6379
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION:-us-west-2}
@@ -53,6 +64,11 @@ services:
       - APIM_SUBSCRIPTION_KEY=${APIM_SUBSCRIPTION_KEY}
       - AZURE_API_BASE=${AZURE_API_BASE}
       - AZURE_API_VERSION=${AZURE_API_VERSION}
+      - OLLAMA_API_BASE=http://ollama-server:${OLLAMA_WEBAPI_PORT:-11434}
+    profiles:
+      - full
+      - lite
+      - bedrock
 
   ollama-server:
     container_name: ollama-server
@@ -85,11 +101,11 @@ services:
       - searxng:/var/cache/searxng
       - ./assets/searxng:/etc/searxng:rw
     environment:
-      - SEARXNG_BASE_URL=https://searxng-server:${SEARXNG_PORT:-8888}/
-      - SEARXNG_SECRET=${SEARXNG_SECRET:-somesearxngsecret}
+      - SEARXNG_BASE_URL=https://searxng-server:8888/
+      - SEARXNG_SECRET=somesearxngsecret
       - SEARXNG_LIMITER=False
       - SEARXNG_PUBLIC_INSTANCE=False
-      - GRANIAN_PORT=${SEARXNG_PORT:-8888}
+      - GRANIAN_PORT=8888
     profiles:
       - full
       - bedrock

@@ -1,9 +1,0 @@
-model_list:
-  - model_name: Claude Opus 4.1
-    litellm_params:
-      model: "bedrock/anthropic.claude-opus-4-1-20250805-v1:0"
-      litellm_credential_name: aws_credentials
-  - model_name: DeepSeek R1
-    litellm_params:
-      model: "bedrock/deepseek.r1-v1:0"
-      litellm_credential_name: aws_credentials

@@ -24,13 +24,10 @@ Things you'll probably never change:
 ```bash
 export OPENWEBUI_PORT=8080
 export LITELLM_PORT=4000
-export OLLAMA_WEBAPI_PORT=11434
-export AWS_REGION=us-west-2
 export POSTGRES_USER=postgres
 export POSTGRES_PASS=secret
-export POSTGRES_DB=openwebui
-export SEARXNG_SECRET=somesearxngsecret
-export SEARXNG_PORT=8888
+export POSTGRES_DB=openwebui,litellm
+export POSTGRES_PORT=5432
 ```
 
 ### Running the stack
@@ -43,10 +40,10 @@ make
 
 ### Make targets
 `make` or `make lite`
-- Default, only spins up reverse-proxy, bedrock-access-gateway, and open-webui services
+- Default, only spins up reverse-proxy, litellm, and open-webui services
 
 `make bedrock`
-- Full feature bedrock deployment with reverse-proxy, bedrock-access-gateway, pgvector, valkey, searxng, and tika services
+- Full feature bedrock deployment with reverse-proxy, litellm, pgvector, valkey, searxng, and tika services
 
 `make ollama`
 - Full feature ollama deployment with reverse-proxy, ollama, pgvector, valkey, searxng, and tika services
