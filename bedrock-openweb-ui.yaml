@@ -1,17 +1,18 @@
 services:
-  reverse-proxy:
-    container_name: reverse-proxy
-    image: docker.io/library/caddy:2-alpine
-    restart: unless-stopped
-    volumes:
-      - ./assets/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+  traefik:
+    image: "traefik:v3.5"
+    container_name: "traefik"
+    command:
+      - "--configfile=/etc/traefik/traefik.yml"
     networks:
       - open-webui-bridge
     ports:
-      - 80:80
-      - 443:443
-    environment:
-      - TARGET=http://open-webui:${OPENWEBUI_PORT:-8080}
+      - "443:443"
+      - "80:80"
+    volumes:
+      - "./assets/certificates:/certificates"
+      - "./assets/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   open-webui:
     container_name: open-webui
@@ -37,6 +38,13 @@ services:
       - POSTGRES_PASS=${POSTGRES_PASS:-secret}
       - POSTGRES_SERVER=${POSTGRES_SERVER:-pgvector-server}
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webui.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.webui.entrypoints=websecure"
+      - "traefik.http.routers.webui.tls=true"
+      - "traefik.http.routers.webui.tls.certresolver=myresolver"
+      - "traefik.http.services.webui.loadbalancer.server.port=8080"
 
   litellm-server:
     container_name: litellm-server
@@ -47,10 +55,9 @@ services:
     command: ["--config", "/app/config.yaml"]
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     environment:
       - PORT=4000
+      - SERVER_ROOT_PATH=/litellm
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${LITELLM_POSTGRES_DB:-litellm}
       - REDIS_HOST=valkey-server
@@ -69,6 +76,12 @@ services:
       - full
       - lite
       - bedrock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.litellm.rule=PathPrefix(`/litellm`)"
+      - "traefik.http.routers.litellm.entrypoints=websecure"
+      - "traefik.http.routers.litellm.tls=true"
+      - "traefik.http.services.litellm.loadbalancer.server.port=4000"
 
   ollama-server:
     container_name: ollama-server
@@ -128,6 +141,8 @@ services:
     restart: always
     networks:
       - open-webui-bridge
+    expose:
+      - 8880
     profiles:
       - full
       - bedrock
