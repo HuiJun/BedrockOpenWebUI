@@ -19,7 +19,7 @@ ollama:
 
 .PHONY: down
 down:
-	export PROFILE=full; docker compose -f bedrock-openweb-ui.yaml --profile full down -v $(c)
+	export PROFILE=full; docker compose -f bedrock-openweb-ui.yaml --profile full down $(c)
 
 .PHONY: clean
 clean:

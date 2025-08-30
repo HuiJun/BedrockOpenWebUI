@@ -4,19 +4,32 @@ model_list:
       model: bedrock/us.anthropic.claude-opus-4-1-20250805-v1:0
       aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
       aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
-      aws_region_name: os.environ/AWS_REGION_NAME
+      aws_region_name: os.environ/AWS_REGION
+      rpm: 2
   - model_name: DeepSeek R1
     litellm_params:
       model: bedrock/us.deepseek.r1-v1:0
       aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
       aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
-      aws_region_name: os.environ/AWS_REGION_NAME
+      aws_region_name: os.environ/AWS_REGION
+      rpm: 10
+    model_info:
+      max_tokens: 4096
+      max_input_tokens: 8192
+      max_output_tokens: 4096
+      max_batch_total_tokens: 8192
   - model_name: gpt-oss-120b
     litellm_params:
       model: bedrock/openai.gpt-oss-120b-1:0
       aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
       aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
-      aws_region_name: os.environ/AWS_REGION_NAME
+      aws_region_name: os.environ/AWS_REGION
+      rpm: 12
+    model_info:
+      max_tokens: 4096
+      max_input_tokens: 8192
+      max_output_tokens: 4096
+      max_batch_total_tokens: 8192
   - model_name: Qwen3 4B Instruct 2507
     litellm_params:
       model: ollama_chat/hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0

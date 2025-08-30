@@ -58,6 +58,8 @@ services:
     environment:
       - PORT=4000
       - SERVER_ROOT_PATH=/litellm
+      - PROXY_BASE_URL=https://localhost
+      - UI_BASE_PATH=/litellm/ui
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${LITELLM_POSTGRES_DB:-litellm}
       - REDIS_HOST=valkey-server
