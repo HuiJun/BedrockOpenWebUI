@@ -1,12 +1,10 @@
 #!/bin/bash
 
-if [ "${PROFILE}" == "bedrock" ] || [ "${PROFILE}" == "full" ] || [ "${PROFILE}" != "lite" ]; then
+if [ "${PROFILE}" != "lite" ]; then
+  export ENABLE_OPENAI_API=True
   export OPENAI_API_BASE_URL=http://bedrock-access-gateway:${BEDROCK_ACCESS_GATEWAY_PORT:-8000}/api/v1
   export OPENAI_API_KEY=bedrock
   export DEFAULT_MODELS=${LOCAL_MODEL:-us.anthropic.claude-opus-4-1-20250805-v1:0}
-fi
-
-if [ "${PROFILE}" != "lite" ]; then
   export DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-openwebui}
   export VECTOR_DB=pgvector
   export PGVECTOR_DB_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-openwebui}
@@ -25,14 +23,13 @@ if [ "${PROFILE}" != "lite" ]; then
 fi
 
 if [ "${PROFILE}" == "ollama" ] || [ "${PROFILE}" == "full" ]; then
-  export ENABLE_OPENAI_API=False
-  export ENABLE_OLLAMA_API=True
   export OLLAMA_BASE_URL=http://ollama-server:11434
   export DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
 fi
 
-if [ "${PROFILE}" == "full" ]; then
-  export ENABLE_OPENAI_API=True
+if [ "${PROFILE}" == "ollama" ]; then
+  export ENABLE_OPENAI_API=False
+  export ENABLE_OLLAMA_API=True
 fi
 
 /bin/bash start.sh
