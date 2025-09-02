@@ -19,9 +19,7 @@ entryPoints:
   websecure:
     address: ":443"
 
-certificatesResolvers:
-  myresolver:
-    acme:
-      email: "nobody@example.com"
-      storage: "/certificates/acme.json"
-      tlsChallenge: {}
+tls:
+  certificates:
+    - certFile: /certificates/localhost.crt
+      keyFile: /certificates/localhost.key

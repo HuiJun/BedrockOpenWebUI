@@ -43,7 +43,6 @@ services:
       - "traefik.http.routers.webui.rule=PathPrefix(`/`)"
       - "traefik.http.routers.webui.entrypoints=websecure"
       - "traefik.http.routers.webui.tls=true"
-      - "traefik.http.routers.webui.tls.certresolver=myresolver"
       - "traefik.http.services.webui.loadbalancer.server.port=8080"
 
   litellm-server:
@@ -61,6 +60,7 @@ services:
       - PROXY_BASE_URL=https://localhost
       - UI_BASE_PATH=/litellm/ui
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-1234}
+      - UI_PASSWORD=${LITELLM_PASSWORD:-sk-1234}
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${LITELLM_POSTGRES_DB:-litellm}
       - REDIS_HOST=valkey-server
       - REDIS_PORT=6379

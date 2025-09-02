@@ -24,7 +24,7 @@ if [ "${PROFILE}" != "lite" ]; then
   export AUDIO_TTS_VOICE=af_heart
 fi
 
-if [ "${PROFILE}" == "ollama" ] ]; then
+if [ "${PROFILE}" == "ollama" ]; then
   export DEFAULT_MODELS=${LOCAL_MODEL:-hf.co/lmstudio-community/Qwen3-4B-Instruct-2507-GGUF:Q8_0}
 fi
 
