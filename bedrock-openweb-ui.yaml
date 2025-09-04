@@ -27,8 +27,6 @@ services:
       - ./assets/openwebui/pre-start.sh:/app/backend/pre-start.sh
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     environment:
       - PROFILE=${PROFILE}
       - PORT=${OPENWEBUI_PORT:-8080}
