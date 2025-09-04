@@ -7,8 +7,6 @@ services:
     networks:
       - open-webui-bridge
     ports:
-      - "4000:4000"
-    ports:
       - "443:443"
       - "80:80"
     volumes:
@@ -101,8 +99,6 @@ services:
       - ./assets/ollama/entrypoint.sh:/entrypoint.sh
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     environment:
       - OLLAMA_WEBAPI_PORT=${OLLAMA_WEBAPI_PORT:-11434}
       - NVIDIA_VISIBLE_DEVICES=all
@@ -118,8 +114,6 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     volumes:
       - searxng:/var/cache/searxng
       - ./assets/searxng:/etc/searxng:rw
@@ -140,8 +134,6 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     profiles:
       - full
       - bedrock
@@ -153,8 +145,6 @@ services:
     restart: always
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     expose:
       - 8880
     profiles:
@@ -171,8 +161,6 @@ services:
       - ./assets/pgvector/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASS:-secret}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
@@ -191,8 +179,6 @@ services:
       - valkey:/data
     networks:
       - open-webui-bridge
-    ports:
-      - "4000:4000"
     profiles:
       - full
       - bedrock
