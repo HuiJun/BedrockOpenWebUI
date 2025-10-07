@@ -32,6 +32,12 @@ services:
       - MODELS_CACHE_TTL=1210000
       - BYPASS_EMBEDDING_AND_RETRIEVAL=${BYPASS_EMBEDDING_AND_RETRIEVAL:-True}
 
+  mcpo-server:
+    container_name: mcpo-server
+    image: ghcr.io/open-webui/mcpo:main
+    pull_policy: always
+    restart: unless-stopped
+
   bedrock-access-gateway:
     container_name: bedrock-access-gateway
     build:
@@ -40,6 +46,8 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
+    ports:
+      - "8000:8000"
     environment:
       - PORT=${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
       - AWS_REGION=${AWS_REGION:-us-west-2}
@@ -86,6 +94,21 @@ services:
       - SEARXNG_LIMITER=False
       - SEARXNG_PUBLIC_INSTANCE=False
       - GRANIAN_PORT=${SEARXNG_PORT:-8888}
+    profiles:
+      - full
+      - bedrock
+      - ollama
+
+  searxng-mcp-server:
+    container_name: bedrock-access-gateway
+    build:
+      context: https://github.com/ihor-sokoliuk/mcp-searxng.git#main:.
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - open-webui-bridge
+    environment:
+      - SEARXNG_URL=https://searxng-server:${SEARXNG_PORT:-8888}
     profiles:
       - full
       - bedrock
