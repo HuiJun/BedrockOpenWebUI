@@ -40,6 +40,8 @@ services:
     restart: unless-stopped
     networks:
       - open-webui-bridge
+    ports:
+      - 8000:8000
     environment:
       - PORT=${BEDROCK_ACCESS_GATEWAY_PORT:-8000}
       - AWS_REGION=${AWS_REGION:-us-west-2}

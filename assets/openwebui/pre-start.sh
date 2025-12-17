@@ -3,7 +3,7 @@
 export ENABLE_OPENAI_API=True
 export OPENAI_API_BASE_URL=http://bedrock-access-gateway:${BEDROCK_ACCESS_GATEWAY_PORT:-8000}/api/v1
 export OPENAI_API_KEY=bedrock
-export DEFAULT_MODELS=${LOCAL_MODEL:-us.anthropic.claude-opus-4-1-20250805-v1:0}
+export DEFAULT_MODELS=${LOCAL_MODEL:-openai.gpt-oss-120b-1:0}
 
 if [ "${PROFILE}" != "lite" ]; then
   export DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASS:-secret}@${POSTGRES_SERVER:-pgvector-server}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-openwebui}
